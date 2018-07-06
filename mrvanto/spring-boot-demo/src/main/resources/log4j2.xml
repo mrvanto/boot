@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status 日志框架本身的日志级别 monitorInterval 每隔多少秒重新读取配置文件-->
+<Configuration status="OFF">
+    <!--共有8个级别，按照从低到高为：All < Trace < Debug < Info < Warn < Error < Fatal < OFF-->
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy.MM.dd HH:mm:ss.SSS} %-5level %class{36} %M() @%L - %msg%n"/>
+        </Console>
+
+        <File name="ERROR" fileName="logs/error.log" append="false">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy.MM.dd HH:mm:ss.SSS} %-5level %class{36} %M() @%L - %msg%n"/>
+        </File>
+
+
+        <!--这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
+        <!--压缩：filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz"-->
+        <RollingRandomAccessFile name="RollingFile" fileName="logs/all.log"
+                     filePattern="logs/$${date:yyyy-MM-dd}/%d{yyyy-MM-dd}-all-%i.log.zip">
+
+            <PatternLayout pattern="%d{yyyy.MM.dd HH:mm:ss.SSS} %-5level %class{36} %M() @%L - %msg%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="5MB"/>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <!--指定最多保存的文件个数-->
+            <!--<DefaultRolloverStrategy max="20"/>-->
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <!--<logger name="org.mybatis" level="INFO"></logger>
+        <logger name="org.springframework" level="INFO"></logger>-->
+
+        <Root level="INFO">
+            <appender-ref ref="ERROR" />
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

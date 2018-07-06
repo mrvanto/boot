@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootdemo.mapper.NewsMapper" >
+  <resultMap id="BaseResultMap" type="com.example.springbootdemo.entity.News" >
+    <id column="objid" property="objid" jdbcType="BIGINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.example.springbootdemo.entity.News" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    objid, title
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_news
+    where objid = #{objid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_news
+    where objid = #{objid,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="objid" keyProperty="objid" parameterType="com.example.springbootdemo.entity.News" useGeneratedKeys="true">
+    insert into t_news (objid, title, content
+      )
+    values (#{objid,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.springbootdemo.entity.News" keyProperty="objid" useGeneratedKeys="true">
+    insert into t_news
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="objid != null" >
+        objid,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="objid != null" >
+        #{objid,jdbcType=BIGINT},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.springbootdemo.entity.News" >
+    update t_news
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where objid = #{objid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.springbootdemo.entity.News" >
+    update t_news
+    set title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where objid = #{objid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.springbootdemo.entity.News" >
+    update t_news
+    set title = #{title,jdbcType=VARCHAR}
+    where objid = #{objid,jdbcType=BIGINT}
+  </update>
+</mapper>
